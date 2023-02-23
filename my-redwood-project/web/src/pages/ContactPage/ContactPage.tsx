@@ -1,6 +1,18 @@
 import { Link, routes } from '@redwoodjs/router'
-import { MetaTags } from '@redwoodjs/web'
+import { MetaTags, useMutation } from '@redwoodjs/web'
 import { FieldError, Form, Label, Submit, SubmitHandler, TextField } from '@redwoodjs/forms'
+import {
+  CreateContactMutation,
+  CreateContactMutationVariables,
+} from 'types/graphql'
+
+const CREATE_CONTACT = gql`
+mutation CreateContactMutation($input: CreateContactInput!) {
+  createContact(input: $input) {
+    id
+  }
+}
+`
 
 interface FormValues {
   name: string
@@ -9,8 +21,14 @@ interface FormValues {
 }
 
 const ContactPage = () => {
+  const [create] = useMutation<
+    CreateContactMutation,
+    CreateContactMutationVariables
+  >(CREATE_CONTACT)
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data)
+    create({variables: {input: data}})
   }
   return (    
     <>
